@@ -1,4 +1,5 @@
 var redux = require('redux');
+var axios = require('axios');
 
 console.log('Starting redux example');
 
@@ -38,7 +39,7 @@ var hobbiesReducer = (state = [], action) => {
           id: nextHobbyId++,
           hobby: action.hobby
         }
-      ];
+      ]
     case REMOVE_HOBBY:
       return state.filter(hobby => hobby.id !== action.id);
     default:
@@ -96,13 +97,60 @@ var removeMovie = (id) => {
   }
 }
 
+const START_LOCATION_FETCH = 'START_LOCATION_FETCH';
+const COMPLETE_LOCATION_FETCH = 'COMPLETE_LOCATION_FETCH';
+
+// Map reducer and action generators.
+// ----------------------------------------
+var mapReducer = (state = {isFetching: false, url: undefined}, action) => {
+  switch (action.type) {
+    case START_LOCATION_FETCH:
+      return {
+        isFetching: true,
+        url: undefined
+      }
+    case COMPLETE_LOCATION_FETCH:
+      return {
+        isFetching: false,
+        url: action.url
+      }
+    default:
+      return state;
+  }
+}
+
+var startLocationFetch = () => {
+  return {
+    type: START_LOCATION_FETCH
+  }
+}
+
+var completeLocationFetch = (url) => {
+  return {
+    type: COMPLETE_LOCATION_FETCH,
+    url
+  }
+}
+
 // Code
 // ----------------------------------------
+
+var fetchLocation = () => {
+  store.dispatch(startLocationFetch());
+
+  axios.get('http://ipinfo.io')
+    .then((res) => {
+      var loc = res.data.loc;
+      var baseUrl = 'http://maps.google.com?q=';
+      store.dispatch(completeLocationFetch(baseUrl + loc));
+    });
+}
 
 var reducer = redux.combineReducers({
   name: nameReducer,
   hobbies: hobbiesReducer,
-  movies: moviesReducer
+  movies: moviesReducer,
+  map: mapReducer
 });
 
 var store = redux.createStore(reducer, redux.compose(
@@ -112,11 +160,18 @@ var store = redux.createStore(reducer, redux.compose(
 // Subscribe to changes.
 var unsubscribe = store.subscribe(() => {
   var state = store.getState();
-  console.log('Name is', state.name);
-  document.getElementById('app').innerHTML = state.name;
+
   console.log('New state', store.getState());
+
+  if (state.map.isFetching) {
+    document.getElementById('app').innerHTML = 'loading...';
+  } else if (state.map.url) {
+    document.getElementById('app').innerHTML = '<a href="' + state.map.url + '" target="_blank">View Your Location</a>';
+  }
 });
 //unsubscribe();
+
+fetchLocation();
 
 console.log('currentState', store.getState());
 

@@ -1,5 +1,5 @@
 var webpack = require('webpack');
-var path = require('path');
+var axios = require('axios');
 
 module.exports = {
   entry: [
@@ -22,7 +22,7 @@ module.exports = {
   },
   resolve: {
     root: __dirname,
-    alias: {    
+    alias: {
       applicationStyles: 'app/styles/app.scss'
     },
     extensions: ['', '.js', '.jsx']
