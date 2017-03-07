@@ -8,15 +8,8 @@ const REMOVE_HOBBY = 'REMOVE_HOBBY';
 const ADD_MOVIE = 'ADD_MOVIE';
 const REMOVE_MOVIE = 'REMOVE_MOVIE';
 
-var stateDefault = {
-  name: 'Anonymous',
-  hobbies: [],
-  movies: []
-};
-
-var nextHobbyId = 1;
-var nextMovieId = 1;
-
+// Name reducer and action generators.
+// ----------------------------------------
 var nameReducer = (state = 'Anonymous', action) => {
   switch (action.type) {
     case CHANGE_NAME:
@@ -26,6 +19,16 @@ var nameReducer = (state = 'Anonymous', action) => {
   }
 }
 
+var changeName = (name) => {
+  return {
+    type: CHANGE_NAME,
+    name
+  }
+}
+
+// Hobbies reducer and action generators.
+// ----------------------------------------
+var nextHobbyId = 1;
 var hobbiesReducer = (state = [], action) => {
   switch (action.type) {
     case ADD_HOBBY:
@@ -43,6 +46,23 @@ var hobbiesReducer = (state = [], action) => {
   }
 }
 
+var addHobby = (hobby) => {
+  return {
+    type: ADD_HOBBY,
+    hobby
+  }
+}
+
+var removeHobby = (id) => {
+  return {
+    type: REMOVE_HOBBY,
+    id
+  }
+}
+
+// Movies reducer and action generators.
+// ----------------------------------------
+var nextMovieId = 1;
 var moviesReducer = (state = [], action) => {
   switch (action.type) {
     case ADD_MOVIE:
@@ -61,6 +81,24 @@ var moviesReducer = (state = [], action) => {
   }
 }
 
+var addMovie = (title, genre) => {
+  return {
+    type: ADD_MOVIE,
+    title,
+    genre
+  }
+}
+
+var removeMovie = (id) => {
+  return {
+    type: REMOVE_MOVIE,
+    id
+  }
+}
+
+// Code
+// ----------------------------------------
+
 var reducer = redux.combineReducers({
   name: nameReducer,
   hobbies: hobbiesReducer,
@@ -76,51 +114,17 @@ var unsubscribe = store.subscribe(() => {
   var state = store.getState();
   console.log('Name is', state.name);
   document.getElementById('app').innerHTML = state.name;
-
   console.log('New state', store.getState());
 });
 //unsubscribe();
 
 console.log('currentState', store.getState());
 
-store.dispatch({
-  type: CHANGE_NAME,
-  name: 'Mike'
-});
-
-store.dispatch({
-  type: ADD_HOBBY,
-  hobby: 'Board Games'
-});
-
-store.dispatch({
-  type: ADD_HOBBY,
-  hobby: 'Photography'
-});
-
-store.dispatch({
-  type: REMOVE_HOBBY,
-  id: 2
-});
-
-store.dispatch({
-  type: CHANGE_NAME,
-  name: 'Fred'
-});
-
-store.dispatch({
-  type: ADD_MOVIE,
-  title: 'Aliens',
-  genre: 'Sci-Fi'
-});
-
-store.dispatch({
-  type: ADD_MOVIE,
-  title: 'Hot Fuzz',
-  genre: 'Comedy'
-});
-
-store.dispatch({
-  type: REMOVE_MOVIE,
-  id: 1
-})
+store.dispatch(changeName('Mike'));
+store.dispatch(addHobby('Board Games'));
+store.dispatch(addHobby('Photography'));
+store.dispatch(removeHobby(2));
+store.dispatch(changeName('Emily'));
+store.dispatch(addMovie('Aliens', 'Sci-Fi'));
+store.dispatch(addMovie('Hot Fuzz', 'Comedy'));
+store.dispatch(removeMovie(1));
