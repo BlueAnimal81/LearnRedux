@@ -8,12 +8,27 @@ var stateDefault = {
   todos:[]
 };
 
+const CHANGE_SEARCH_TEXT = 'CHANGE_SEARCH_TEXT';
+
 var reducer = (state = stateDefault, action) => {
-  return state;
+  switch (action.type) {
+    case CHANGE_SEARCH_TEXT:
+      return {
+        ...state,
+        searchText: action.searchText
+      };
+    default:
+      return state;
+  }
 }
 
 var store = redux.createStore(reducer);
 
-var currentState = store.getState();
+console.log('currentState', store.getState());
 
-console.log(currentState, store);
+store.dispatch({
+  type: CHANGE_SEARCH_TEXT,
+  searchText: 'Any Search Text'
+});
+
+console.log('Search text should be "Any Search Text"', store.getState());
